@@ -721,7 +721,9 @@ class PropKB(Offtryck, PDFDocumentRepository):
                             filename = self.store.downloaded_path(basefile, attachment=part+".pdf")
                             self.download_if_needed(sublink, basefile, archive=self.download_archive, filename=filename)
                         else:
-                            yield basefile, sublink
+                            # Construct a dict to return
+                            params = {'uri':sublink}
+                            yield basefile, params
                             yielded.add((basefile,part))
 
     def metadata_from_basefile(self, basefile):

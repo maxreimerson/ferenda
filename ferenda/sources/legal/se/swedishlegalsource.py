@@ -66,12 +66,12 @@ class SwedishLegalStore(DocumentStore):
     def basefile_to_pathfrag(self, basefile):
         # "2012/13:152" => "2012-13/152"
         # "2012:152"    => "2012/152"
-        return basefile.replace("/", "-").replace(":", "/")
+        return basefile.replace("/", "-").replace(":", os.sep)
 
     def pathfrag_to_basefile(self, pathfrag):
         # "2012-13/152" => "2012/13:152"
         # "2012/152"    => "2012:152"
-        return pathfrag.replace("/", ":").replace("-", "/")
+        return pathfrag.replace(os.sep, ":").replace("-", "/")
 
 
 # used instead of False when we need to provide more information (yet

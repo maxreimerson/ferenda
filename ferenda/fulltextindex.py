@@ -453,11 +453,12 @@ class WhooshIndex(FulltextIndex):
             used_schema[fieldname] = self.from_native_field(field_object)
         return used_schema
 
-    def update(self, uri, repo, basefile, text, **kwargs):
+    def update(self, uri, repo, basefile, text, **orig_kwargs):
         if not self._writer:
             self._writer = self.index.writer()
 
         s = self.schema()
+        kwargs = {k: v for k, v in orig_kwargs.items() if k in s}
         for key in kwargs:
             # special-handling of the Resource type -- this is provided as
             # a dict with 'iri' and 'label' keys, and we flatten it to a
@@ -472,7 +473,7 @@ class WhooshIndex(FulltextIndex):
                 else:
                     kwargs[key] = [kwargs[key]['iri'],
                                    kwargs[key]['label']]
-            elif isinstance(s[key], Datetime):
+            elif isinstance(s.get(key), Datetime):
                 if (isinstance(kwargs[key], date) and
                         not isinstance(kwargs[key], datetime)):
                     # convert date to datetime

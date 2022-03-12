@@ -80,7 +80,7 @@ class Riksdagen(Offtryck, FixedLayoutSource):
                 self.SOU: "utr/sou",
                 self.DIREKTIV: "dir"}.get(self.document_type)
 
-    
+
     @recordlastdownload
     def download(self, basefile=None):
         if basefile:
@@ -90,6 +90,12 @@ class Riksdagen(Offtryck, FixedLayoutSource):
             url += "&from=" + self.config.lastdownload.strftime("%Y-%m-%d")
         for basefile, url in self.download_get_basefiles(url):
             self.download_single(basefile, url)
+
+    def modify_url_if_needed(self, url):
+        if re.match('//data\.riksdagen\.se/.*', url):
+            return 'https:' + url
+        else:
+            return url
 
     @downloadmax
     def download_get_basefiles(self, start_url):
@@ -119,7 +125,7 @@ class Riksdagen(Offtryck, FixedLayoutSource):
                 attachment = None
                 if doc.tempbeteckning.text:
                     attachment = doc.tempbeteckning.text
-                yield (basefile, attachment), doc.dokumentstatus_url_xml.text
+                yield (basefile, attachment), self.modify_url_if_needed(doc.dokumentstatus_url_xml.text)
             try:
                 nexturl = soup.dokumentlista['nasta_sida']
                 if nexturl in seenurls:
